@@ -1,0 +1,58 @@
+version: '3'
+
+networks:
+  dsenet:
+    external: true
+
+services:
+  dse:
+    image: datastax/dse-server:6.0.1
+    hostname: dse
+    container_name: dse
+    environment:
+      - "DS_LICENSE=accept"
+      - "SEEDS=dse,dse-01"
+    command: [
+      "-k",
+      "-s",
+      "-g"
+    ]
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+    networks:
+      - dsenet
+
+  #dse-01:
+  #  image: datastax/dse-server:6.0.1
+  #  environment:
+  #    - "DS_LICENSE=accept"
+  #    - "SEEDS=dse,dse-01"
+  #  command: [
+  #    "-k",
+  #    "-s",
+  #    "-g"
+  #  ]
+  #  cap_add:
+  #  - IPC_LOCK
+  #  ulimits:
+  #    memlock: -1
+
+  #dse-opscenter:
+  #  image: datastax/dse-opscenter:6.5.1
+  #  environment:
+  #    - "DS_LICENSE=accept"
+  #  ports:
+  #    - "8888:8888"
+      
+  dse-studio:
+    image: datastax/dse-studio:6.0.1
+    environment:
+      - "DS_LICENSE=accept"
+    depends_on:
+      - dse
+    ports:
+      - "9091:9091"
+    networks:
+      - dsenet
